@@ -37,7 +37,6 @@ if __name__ == '__main__':
                         help="json file path")
     parser.add_argument("--save_path", type=str, default=r'..\..\assets\png')
 
-
     result = parser.parse_args()
 
     json_path = os.path.abspath(os.path.join(os.getcwd(), result.json_path))
@@ -57,6 +56,5 @@ if __name__ == '__main__':
         map_ids = np.reshape(map_ids, (1,))
     for map_id in map_ids:
         draw_map(map_id, json_path, save_path)
-
 
     print("Successfully draw the maps into {}.".format(save_path))
