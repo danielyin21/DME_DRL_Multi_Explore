@@ -10,7 +10,7 @@ border_pad = 25
 def draw_map(file_name, json_path, save_path):
     print("Processing ", file_name)
 
-    with open(json_path + '/' + file_name + '.json') as json_file:
+    with open(json_path + '\\' + file_name + '.json') as json_file:
         json_data = json.load(json_file)
 
     # Draw the contour
@@ -30,9 +30,9 @@ def draw_map(file_name, json_path, save_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Visualize the subset of maps in .png.")
-    parser.add_argument("--map_id_set_file", help="map id set (.txt)",default='E:\Summer Research 2023\DME-DRL\DME-DRL\assets\a.txt')
-    parser.add_argument("--json_path", type=str, default="E:\Summer Research 2023\DME-DRL\DME-DRL\src\viz\vis_map.py", help="json file path")
-    parser.add_argument("--save_path", type=str, default='E:\Summer Research 2023\DME-DRL\DME-DRL\assets\png')
+    parser.add_argument("--map_id_set_file", help="map id set (.txt)",default='D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\a.txt')
+    parser.add_argument("--json_path", type=str, default="D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\json", help="json file path")
+    parser.add_argument("--save_path", type=str, default='D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\png')
     result = parser.parse_args()
 
     json_path = os.path.abspath(os.path.join(os.getcwd(), result.json_path))
@@ -43,12 +43,12 @@ if __name__ == '__main__':
     print("---------------------------------------------------------------------")
     print("|json file path              |{}".format(json_path))
     print("---------------------------------------------------------------------")
-    print("|Save path                   | {}".format(save_path))
+    print("|Save path                   |{}".format(save_path))
     print("---------------------------------------------------------------------")
 
     map_ids = np.loadtxt(map_file, str)
 
-    for map_id in map_ids:
-        draw_map(map_id, json_path, save_path)
-
+    # for map_id in map_ids:
+    #     draw_map(map_id, json_path, save_path)
+    draw_map('a', json_path, save_path)
     print("Successfully draw the maps into {}.".format(save_path))
