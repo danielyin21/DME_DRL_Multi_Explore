@@ -27,8 +27,13 @@ This is the repository for "Decentralized Exploration of a Structured Environmen
 `git clone https://github.com/hedingjie/DME-DRL.git`
 - Unzip json.tar.gz (mapset) in assets:
 `tar -zvxf json.tar`;
+- Install modules 
+  - opencv: 
+  `pip install opencv-python`
+  - tensorboardX:
+    `pip install tensorboardX`
 - Generate 2D plan pictures from json files:
-`python viz/vis_map.py`
+`python viz/vis_map.py` (in the src dir)
 - Train: `python main.py (in the src dir)`
 - Evaluate: `python eval_drl.py`
 
