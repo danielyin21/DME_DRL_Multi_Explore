@@ -30,9 +30,9 @@ def draw_map(file_name, json_path, save_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Visualize the subset of maps in .png.")
-    parser.add_argument("--map_id_set_file", help="map id set (.txt)",default='/home/hdj/PycharmProjects/Multi_Robot_Exploration/assets/test_1000.txt')
-    parser.add_argument("--json_path", type=str, default="/home/hdj/PycharmProjects/Multi_Robot_Exploration/HouseExpo/json", help="json file path")
-    parser.add_argument("--save_path", type=str, default='/home/hdj/PycharmProjects/Multi_Robot_Exploration/assets/png')
+    parser.add_argument("--map_id_set_file", help="map id set (.txt)",default='E:\Summer Research 2023\DME-DRL\DME-DRL\assets\a.txt')
+    parser.add_argument("--json_path", type=str, default="E:\Summer Research 2023\DME-DRL\DME-DRL\src\viz\vis_map.py", help="json file path")
+    parser.add_argument("--save_path", type=str, default='E:\Summer Research 2023\DME-DRL\DME-DRL\assets\png')
     result = parser.parse_args()
 
     json_path = os.path.abspath(os.path.join(os.getcwd(), result.json_path))
