@@ -1,5 +1,7 @@
 import os
 import json
+import platform
+
 import cv2
 import argparse
 import numpy as np
@@ -10,8 +12,12 @@ border_pad = 25
 def draw_map(file_name, json_path, save_path):
     print("Processing ", file_name)
 
-    with open(json_path + '\\' + file_name + '.json') as json_file:
-        json_data = json.load(json_file)
+    if platform.system() == 'Darwin':
+        with open(json_path + '/' + file_name + '.json') as json_file:
+            json_data = json.load(json_file)
+    else:
+        with open(json_path + '\\' + file_name + '.json') as json_file:
+            json_data = json.load(json_file)
 
     # Draw the contour
     verts = (np.array(json_data['verts']) * meter2pixel).astype(np.int)
@@ -30,9 +36,15 @@ def draw_map(file_name, json_path, save_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Visualize the subset of maps in .png.")
-    parser.add_argument("--map_id_set_file", help="map id set (.txt)",default='D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\a.txt')
-    parser.add_argument("--json_path", type=str, default="D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\json", help="json file path")
-    parser.add_argument("--save_path", type=str, default='D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\png')
+    if platform.system() == 'Darwin':
+        parser.add_argument("--map_id_set_file", help="map id set (.txt)",default='../../assets/a.txt')
+        parser.add_argument("--json_path", type=str, default="../../assets/json", help="json file path")
+        parser.add_argument("--save_path", type=str, default='../../assets/png')
+    else:
+        parser.add_argument("--map_id_set_file", help="map id set (.txt)",default='D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\a.txt')
+        parser.add_argument("--json_path", type=str, default="D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\json", help="json file path")
+        parser.add_argument("--save_path", type=str, default='D:\\2023 summer\\DME\\DME_DRL_CO\\assets\\png')
+
     result = parser.parse_args()
 
     json_path = os.path.abspath(os.path.join(os.getcwd(), result.json_path))
