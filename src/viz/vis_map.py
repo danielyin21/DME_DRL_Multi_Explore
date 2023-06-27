@@ -10,7 +10,7 @@ border_pad = 25
 def draw_map(file_name, json_path, save_path):
     print("Processing ", file_name)
 
-    with open(json_path + '/' + file_name + '.json') as json_file:
+    with open(json_path + '\\' + file_name + '.json') as json_file:
         json_data = json.load(json_file)
 
     # Draw the contour
@@ -30,9 +30,12 @@ def draw_map(file_name, json_path, save_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Visualize the subset of maps in .png.")
-    parser.add_argument("--map_id_set_file", help="map id set (.txt)",default='E:\Summer Research 2023\DME-DRL\DME-DRL\assets\a.txt')
-    parser.add_argument("--json_path", type=str, default="E:\Summer Research 2023\DME-DRL\DME-DRL\src\viz\vis_map.py", help="json file path")
-    parser.add_argument("--save_path", type=str, default='E:\Summer Research 2023\DME-DRL\DME-DRL\assets\png')
+    parser.add_argument("--map_id_set_file", help="map id set (.txt)",
+                        default=r'..\..\assets\a.txt')
+    parser.add_argument("--json_path", type=str, default=r'..\..\assets\json',
+                        help="json file path")
+    parser.add_argument("--save_path", type=str, default=r'..\..\assets\png')
+
     result = parser.parse_args()
 
     json_path = os.path.abspath(os.path.join(os.getcwd(), result.json_path))
@@ -47,7 +50,8 @@ if __name__ == '__main__':
     print("---------------------------------------------------------------------")
 
     map_ids = np.loadtxt(map_file, str)
-
+    if map_ids.shape == ():
+        map_ids = np.reshape(map_ids, (1,))
     for map_id in map_ids:
         draw_map(map_id, json_path, save_path)
 
