@@ -3,30 +3,91 @@ import json
 import cv2
 import argparse
 import numpy as np
+import random
 
 meter2pixel = 100
 border_pad = 25
+def draw_maze_map(file_name, save_path):
+    maze = np.zeros((20, 20, 3), dtype=np.uint8)
 
-def draw_map(file_name, json_path, save_path):
-    print("Processing ", file_name)
+    # Set the starting position
+    start_x, start_y = random.randint(0, 19), random.randint(0, 19)
+    maze[start_y, start_x] = (255, 255, 255)
 
-    with open(json_path + '\\' + file_name + '.json') as json_file:
-        json_data = json.load(json_file)
+    # Perform depth-first search to create the maze
+    stack = [(start_x, start_y)]
 
-    # Draw the contour
-    verts = (np.array(json_data['verts']) * meter2pixel).astype(np.int)
-    x_max, x_min, y_max, y_min = np.max(verts[:, 0]), np.min(verts[:, 0]), np.max(verts[:, 1]), np.min(verts[:, 1])
-    cnt_map = np.zeros((y_max - y_min + border_pad * 2,
-                        x_max - x_min + border_pad * 2))
+    while stack:
+        x, y = stack[-1]
 
-    verts[:, 0] = verts[:, 0] - x_min + border_pad
-    verts[:, 1] = verts[:, 1] - y_min + border_pad
-    cv2.drawContours(cnt_map, [verts], 0, 255, -1)
+        # Get the unvisited neighbors
+        neighbors = [(x - 2, y), (x + 2, y), (x, y - 2), (x, y + 2)]
+        unvisited_neighbors = [neighbor for neighbor in neighbors if
+                               0 <= neighbor[0] < 20 and 0 <= neighbor[1] < 20 and all(
+                                   maze[neighbor[1], neighbor[0]] == 0)]
+        if unvisited_neighbors:
+            nx, ny = random.choice(unvisited_neighbors)
+            maze[ny, nx] = (255, 255, 255)
+            maze[ny + (y - ny) // 2, nx + (x - nx) // 2] = (255, 255, 255)
+            stack.append((nx, ny))
+        else:
+            stack.pop()
 
-    # Save map
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-    cv2.imwrite(save_path + "/" + file_name + '.png', cnt_map)
+    cv2.imwrite(save_path + "/" + file_name + '.png', maze)
+
+def draw_map(file_name, save_path):
+    image = np.ones((20, 20, 3), dtype=np.uint8) * 255
+
+    # Generate random black dots
+    num_dots = 100  # Adjust the range as per your preference
+
+    dot_region_size = 5  # Size of the region to place each dot
+
+    for _ in range(num_dots):
+        # Randomly select a region to place the dot
+        region_x = random.randint(1, 20 - dot_region_size - 1)
+        region_y = random.randint(1, 20 - dot_region_size - 1)
+
+        # Randomly choose a position within the selected region
+        x = random.randint(region_x, region_x + dot_region_size - 1)
+        y = random.randint(region_y, region_y + dot_region_size - 1)
+
+        # Check if the dot is surrounded by black dots or placed on the boundary
+        if (np.all(image[[y - 1, y + 1, y, y], [x, x, x - 1, x + 1]] == 0) or
+                x == 0 or x == 19 or y == 0 or y == 19):
+            image[y, x] = (0, 0, 0)
+            continue
+
+        # Set the pixel color to black
+        image[y, x] = (0, 0, 0)
+
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+    cv2.imwrite(save_path + "/" + file_name + '.png', image)
+# def draw_map(file_name, json_path, save_path):
+#     print("Processing ", file_name)
+#
+#     with open(json_path + '\\' + file_name + '.json') as json_file:
+#         json_data = json.load(json_file)
+#
+#     # Draw the contour
+#     verts = (np.array(json_data['verts']) * meter2pixel).astype(int)
+#
+#
+#     x_max, x_min, y_max, y_min = np.max(verts[:, 0]), np.min(verts[:, 0]), np.max(verts[:, 1]), np.min(verts[:, 1])
+#     cnt_map = np.zeros((y_max - y_min + border_pad * 2,
+#                         x_max - x_min + border_pad * 2))
+#
+#     verts[:, 0] = verts[:, 0] - x_min + border_pad
+#     verts[:, 1] = verts[:, 1] - y_min + border_pad
+#     cv2.drawContours(cnt_map, [verts], 0, 255, -1)
+#
+#     # Save map
+#     if not os.path.exists(save_path):
+#         os.mkdir(save_path)
+#     cv2.imwrite(save_path + "/" + file_name + '.png', cnt_map)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Visualize the subset of maps in .png.")
@@ -56,7 +117,7 @@ if __name__ == '__main__':
     if map_ids.shape == ():
         map_ids = np.reshape(map_ids, (1,))
     for map_id in map_ids:
-        draw_map(map_id, json_path, save_path)
+        draw_map(map_id, save_path)
 
 
     print("Successfully draw the maps into {}.".format(save_path))
