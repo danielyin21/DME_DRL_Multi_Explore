@@ -4,9 +4,11 @@ import cv2
 import argparse
 import numpy as np
 import random
+from collections import deque
 
 meter2pixel = 100
 border_pad = 25
+
 def draw_maze_map(file_name, save_path):
     maze = np.zeros((20, 20, 3), dtype=np.uint8)
 
@@ -37,6 +39,50 @@ def draw_maze_map(file_name, save_path):
         os.mkdir(save_path)
     cv2.imwrite(save_path + "/" + file_name + '.png', maze)
 
+
+
+def is_valid_pixel(image, x, y):
+    # Returns true if pixel is within the image bounds and is white
+    return 0 <= x < image.shape[0] and 0 <= y < image.shape[1] and np.all(image[y][x] == [255, 255, 255])
+
+
+def is_surrounded_by_black(image, x, y):
+    # Defines possible movement directions (up, down, left, right)
+    directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+
+    # Check if all surrounding pixels are black
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if nx >= 0 and ny >= 0 and nx < image.shape[0] and ny < image.shape[1]:
+            if np.any(image[ny][nx] != [0, 0, 0]):
+                return False
+    return True
+
+
+def get_white_pixels_surrounded_by_black(image):
+    visited = np.zeros((image.shape[0], image.shape[1]), dtype=bool)
+    white_pixels_surrounded_by_black = []
+
+    for y in range(image.shape[0]):
+        for x in range(image.shape[1]):
+            if is_valid_pixel(image, x, y) and not visited[y][x]:
+                queue = deque([(x, y)])
+                visited[y][x] = True
+
+                while queue:
+                    x, y = queue.popleft()
+                    if is_surrounded_by_black(image, x, y):
+                        white_pixels_surrounded_by_black.append((x, y))
+
+                    # Check neighboring pixels (up, down, left, right)
+                    for dx, dy in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+                        nx, ny = x + dx, y + dy
+                        if is_valid_pixel(image, nx, ny) and not visited[ny][nx]:
+                            queue.append((nx, ny))
+                            visited[ny][nx] = True
+    return white_pixels_surrounded_by_black
+
+
 def draw_map(file_name, save_path):
     image = np.ones((20, 20, 3), dtype=np.uint8) * 255
 
@@ -62,7 +108,12 @@ def draw_map(file_name, save_path):
 
         # Set the pixel color to black
         image[y, x] = (0, 0, 0)
-
+    white_pixels_surrounded_by_black = get_white_pixels_surrounded_by_black(image)
+    print(white_pixels_surrounded_by_black)
+    for y, x in white_pixels_surrounded_by_black:
+        print([y, x])
+        image[y, x] = (0, 0, 0)
+        print(image[y,x])
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     cv2.imwrite(save_path + "/" + file_name + '.png', image)
