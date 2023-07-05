@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 import random
 from collections import deque
+from datetime import datetime
 
 meter2pixel = 100
 border_pad = 25
@@ -120,8 +121,8 @@ def draw_map(file_name, save_path):
     # map_loader(file_name,save_path)
 
 def map_loader(file_name, save_path, padding=5):
-    obstacle = 0
-    free = 255
+    obstacle = 255
+    free = 0
     map_raw = cv2.imread(save_path + "/" + file_name + '.png',cv2.IMREAD_GRAYSCALE)
     maze=np.zeros_like(map_raw)
     maze[map_raw==0] = obstacle
@@ -138,32 +139,45 @@ def map_loader(file_name, save_path, padding=5):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Visualize the subset of maps in .png.")
 
-    parser.add_argument("--map_id_set_file", help="map id set (.txt)",
-                        default=r'..\..\assets\a.txt')
-    parser.add_argument("--json_path", type=str, default=r'..\..\assets\json',
-                        help="json file path")
-    parser.add_argument("--save_path", type=str, default=r'..\..\assets\png')
+    parser.add_argument("--save_map_id_set_file", help="map id set (.txt)",
+                        default=r'.\assets\map_id.txt')
+    parser.add_argument("--pic_num", help="number of pictures",
+                        default=100)
+    parser.add_argument("--save_path", type=str, default=r'.\assets\png')
 
 
     result = parser.parse_args()
 
-    json_path = os.path.abspath(os.path.join(os.getcwd(), result.json_path))
-    map_file = os.path.abspath(os.path.join(os.getcwd(), result.map_id_set_file))
+    # json_path = os.path.abspath(os.path.join(os.getcwd(), result.json_path))
+    # map_file = os.path.abspath(os.path.join(os.getcwd(), result.map_id_set_file))
+
+    map_id_file_path = os.path.abspath(os.path.join(os.getcwd(), result.save_map_id_set_file))
+    pic_num = result.pic_num
     save_path = os.path.abspath(os.path.join(os.getcwd(), result.save_path))
     print("---------------------------------------------------------------------")
-    print("|map id set file path        |{}".format(map_file))
-    print("---------------------------------------------------------------------")
-    print("|json file path              |{}".format(json_path))
+    print("|map id set file path        |{}".format(map_id_file_path))
     print("---------------------------------------------------------------------")
     print("|Save path                   |{}".format(save_path))
     print("---------------------------------------------------------------------")
+    for filename in os.listdir(save_path):
+        file_path = os.path.join(save_path, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
 
-    map_ids = np.loadtxt(map_file, str)
-
-    if map_ids.shape == ():
-        map_ids = np.reshape(map_ids, (1,))
-    for map_id in map_ids:
-        draw_map(map_id, save_path)
+    map_id_file = open(map_id_file_path, "w")
 
 
+
+    # map_ids = np.loadtxt(map_id_file, str)
+    #
+    # if map_ids.shape == ():
+    #     map_ids = np.reshape(map_ids, (1,))
+    for iteration in range(pic_num):
+
+
+        current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
+        map_id_file.write("image"+str(iteration)+"-"+current_time+"\n")
+        draw_map("image"+str(iteration)+"-"+current_time, save_path)
+
+    map_id_file.close()
     print("Successfully draw the maps into {}.".format(save_path))
