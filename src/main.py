@@ -40,7 +40,7 @@ n_episode = 200000
 # max_steps = 1000
 max_steps = 50
 # episodes_before_train = 1000
-episodes_before_train = 100
+episodes_before_train = 10
 
 win = None
 param = None
