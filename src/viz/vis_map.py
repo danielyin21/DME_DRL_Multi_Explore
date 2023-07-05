@@ -117,28 +117,23 @@ def draw_map(file_name, save_path):
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     cv2.imwrite(save_path + "/" + file_name + '.png', image)
-# def draw_map(file_name, json_path, save_path):
-#     print("Processing ", file_name)
-#
-#     with open(json_path + '\\' + file_name + '.json') as json_file:
-#         json_data = json.load(json_file)
-#
-#     # Draw the contour
-#     verts = (np.array(json_data['verts']) * meter2pixel).astype(int)
-#
-#
-#     x_max, x_min, y_max, y_min = np.max(verts[:, 0]), np.min(verts[:, 0]), np.max(verts[:, 1]), np.min(verts[:, 1])
-#     cnt_map = np.zeros((y_max - y_min + border_pad * 2,
-#                         x_max - x_min + border_pad * 2))
-#
-#     verts[:, 0] = verts[:, 0] - x_min + border_pad
-#     verts[:, 1] = verts[:, 1] - y_min + border_pad
-#     cv2.drawContours(cnt_map, [verts], 0, 255, -1)
-#
-#     # Save map
-#     if not os.path.exists(save_path):
-#         os.mkdir(save_path)
-#     cv2.imwrite(save_path + "/" + file_name + '.png', cnt_map)
+    # map_loader(file_name,save_path)
+
+def map_loader(file_name, save_path, padding=5):
+    obstacle = 0
+    free = 255
+    map_raw = cv2.imread(save_path + "/" + file_name + '.png',cv2.IMREAD_GRAYSCALE)
+    maze=np.zeros_like(map_raw)
+    maze[map_raw==0] = obstacle
+    maze[map_raw==255] = free
+    index = np.where(maze==obstacle)
+    [index_row_max,index_row_min,index_col_max,index_col_min] = [np.max(index[0]),np.min(index[0]),np.max(index[1]),np.min(index[1])]
+    maze = maze[index_row_min:index_row_max+1,index_col_min:index_col_max+1]
+    maze = np.lib.pad(maze, padding, mode='constant', constant_values=obstacle)
+    maze = cv2.resize(maze,(200,200),interpolation=cv2.INTER_NEAREST)
+    # map = cv2.dilate(map, np.ones((3, 3)), iterations=2)
+    cv2.imwrite(save_path + "/" + file_name + 'loaded' + '.png', maze)
+    return maze
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Visualize the subset of maps in .png.")
