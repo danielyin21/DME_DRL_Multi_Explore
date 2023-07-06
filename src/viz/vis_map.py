@@ -88,7 +88,7 @@ def draw_map(file_name, save_path):
     image = np.ones((20, 20, 3), dtype=np.uint8) * 255
 
     # Generate random black dots
-    num_dots = 100  # Adjust the range as per your preference
+    num_dots = 20  # Adjust the range as per your preference
 
     dot_region_size = 5  # Size of the region to place each dot
 
@@ -168,16 +168,12 @@ if __name__ == '__main__':
 
 
 
-    # map_ids = np.loadtxt(map_id_file, str)
-    #
-    # if map_ids.shape == ():
-    #     map_ids = np.reshape(map_ids, (1,))
     for iteration in range(pic_num):
 
 
         current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
         map_id_file.write("image"+str(iteration)+"-"+current_time+"\n")
-        draw_map("image"+str(iteration)+"-"+current_time, save_path)
+        draw_maze_map("image"+str(iteration)+"-"+current_time, save_path)
 
     map_id_file.close()
     print("Successfully draw the maps into {}.".format(save_path))

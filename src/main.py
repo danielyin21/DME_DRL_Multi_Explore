@@ -10,9 +10,9 @@ from sim_utils import onehot_from_action
 import time
 import os
 import yaml
-
+print(th.cuda.is_available())
 # do not render the scene
-e_render = False
+e_render = True
 # tensorboard writer
 time_now = time.strftime("%m%d_%H%M%S")
 writer = SummaryWriter(os.getcwd()+'/../runs/'+time_now)
@@ -98,7 +98,7 @@ for i_episode in range(n_episode):
     wrong_step = 0
     for t in range(max_steps):
         # render every 100 episodes to speed up training
-        if i_episode % 100 == 0 and e_render:
+        if i_episode % 10 == 0 and e_render:
             world.render()
         obs_history = obs_history.type(FloatTensor)
         action_probs = maddpg.select_action(obs_history, pose).data.cpu()

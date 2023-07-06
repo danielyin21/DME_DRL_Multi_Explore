@@ -5,6 +5,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from sim_utils import draw_maps
+
+
 from robot import Robot
 
 
@@ -13,10 +15,17 @@ class RobotExplorationT1(gym.Env):
         np.random.seed(1234)
         with open(config_path) as stream:
             self.config = yaml.load(stream, Loader=yaml.SafeLoader)
-        self.map_id_set_train = np.loadtxt(os.getcwd()+self.config['map_id_train_set'], str)
-        self.map_id_set_eval = np.loadtxt(os.getcwd()+self.config['map_id_eval_set'],str)
-        draw_maps(self.map_id_set_train,os.getcwd()+self.config['json_dir'],os.getcwd()+self.config['png_dir'])
-        draw_maps(self.map_id_set_eval, os.getcwd() + self.config['json_dir'], os.getcwd() + self.config['png_dir'])
+        self.map_id_set_train = os.getcwd()+self.config['map_id_train_set']
+        self.map_id_set_eval = os.getcwd()+self.config['map_id_eval_set']
+        for filename in os.listdir(os.getcwd() + self.config['png_dir']):
+            file_path = os.path.join(os.getcwd() + self.config['png_dir'], filename)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        draw_maps(self.map_id_set_train,100,os.getcwd()+self.config['png_dir'])
+        draw_maps(self.map_id_set_eval,10, os.getcwd() + self.config['png_dir'])
+        self.map_id_set_train = np.loadtxt(os.getcwd() + self.config['map_id_train_set'], str)
+        self.map_id_set_eval = np.loadtxt(os.getcwd() + self.config['map_id_eval_set'], str)
+
         if number is None:
             self.number = self.config['robots']['number']
         else:
@@ -34,6 +43,7 @@ class RobotExplorationT1(gym.Env):
         self.reset()
 
     def reset(self,random=True):
+        plt.close('all')
         if random:
             self.map_id = np.random.choice(self.map_id_set_train)
         else:
