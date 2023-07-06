@@ -10,7 +10,7 @@ comm_mode: NC
 # robots settings
 robots:
   number: 2
-  robotRadius: 1
+  robotRadius: 3
   commRange: 60
   syncRange: 20
   startPose:
