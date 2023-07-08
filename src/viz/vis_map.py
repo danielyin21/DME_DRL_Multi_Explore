@@ -110,15 +110,16 @@ def draw_map(file_name, save_path):
         # Set the pixel color to black
         image[y, x] = (0, 0, 0)
     white_pixels_surrounded_by_black = get_white_pixels_surrounded_by_black(image)
-    print(white_pixels_surrounded_by_black)
+    # print(white_pixels_surrounded_by_black)
     for y, x in white_pixels_surrounded_by_black:
-        print([y, x])
+        # print([y, x])
         image[y, x] = (0, 0, 0)
-        print(image[y,x])
+        # print(image[y,x])
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     cv2.imwrite(save_path + "/" + file_name + '.png', image)
     # map_loader(file_name,save_path)
+
 
 def map_loader(file_name, save_path, padding=5):
     obstacle = 255
