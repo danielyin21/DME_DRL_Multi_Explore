@@ -52,6 +52,7 @@ class MADDPG:
 
         if self.use_cuda:
             for x in self.actors:
+                print("updated")
                 x.cuda()
             for x in self.critics:
                 x.cuda()
@@ -156,15 +157,15 @@ class MADDPG:
             self.n_actions)
         FloatTensor = t.cuda.FloatTensor if self.use_cuda else t.FloatTensor
         for i in range(self.n_agents):
-            sb = state_batch[i, :].detach()
-            pose_batch_i = pose_batch[i,...]
-            sb = sb.type(FloatTensor)
-            pose_batch_i = pose_batch_i.type(FloatTensor)
-            act = self.actors[i](sb.unsqueeze(0),pose_batch_i.unsqueeze(0)).squeeze().type(FloatTensor)
-            
             # sb = state_batch[i, :].detach()
             # pose_batch_i = pose_batch[i,...]
-            # act = self.actors[i](sb.unsqueeze(0),pose_batch_i.unsqueeze(0)).squeeze()
+            # sb = sb.type(FloatTensor)
+            # pose_batch_i = pose_batch_i.type(FloatTensor)
+            # act = self.actors[i](sb.unsqueeze(0),pose_batch_i.unsqueeze(0)).squeeze().type(FloatTensor)
+            
+            sb = state_batch[i, :].detach()
+            pose_batch_i = pose_batch[i,...]
+            act = self.actors[i](sb.unsqueeze(0),pose_batch_i.unsqueeze(0)).squeeze()
             act = t.clamp(act, 1e-6, 1-1e-6)
             actions[i, :] = act
         self.steps_done += 1

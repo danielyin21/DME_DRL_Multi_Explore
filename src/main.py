@@ -79,6 +79,7 @@ for i_episode in range(n_episode):
         pose = th.tensor(pose)
     except Exception as e:
         continue
+    # print("Test 2")
     obs = np.stack(obs)
     # history initialization
     obs_t_minus_0 = copy(obs)
@@ -97,6 +98,7 @@ for i_episode in range(n_episode):
     total_reward = 0.0
     rr = np.zeros((n_agents,))
     wrong_step = 0
+    # print("Test 1")
     for t in range(max_steps):
         # render every 100 episodes to speed up training
         if i_episode % 10 == 0 and e_render:
