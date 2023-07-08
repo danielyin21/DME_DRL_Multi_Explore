@@ -11,6 +11,7 @@ import time
 import os
 import yaml
 print(th.cuda.is_available())
+device = th.device("cuda" if th.cuda.is_available() else "cpu")
 # do not render the scene
 e_render = True
 # tensorboard writer
@@ -34,13 +35,13 @@ n_pose = 2
 # capacity = 1000000
 capacity = 5000
 # batch_size = 1000
-batch_size = 100
+batch_size = 10
 
 n_episode = 200000
 # max_steps = 1000
 max_steps = 50
 # episodes_before_train = 1000
-episodes_before_train = 100
+episodes_before_train = 10
 
 win = None
 param = None
@@ -100,10 +101,16 @@ for i_episode in range(n_episode):
         # render every 100 episodes to speed up training
         if i_episode % 10 == 0 and e_render:
             world.render()
-        obs_history = obs_history.type(FloatTensor)
-        action_probs = maddpg.select_action(obs_history, pose).data.cpu()
-        action_probs_valid = np.copy(action_probs)
+        # obs_history = obs_history.type(FloatTensor)
+        # action_probs = maddpg.select_action(obs_history, pose).data.cpu()
+        # action_probs_valid = np.copy(action_probs)
+        # action = []
+        
+        obs_history = obs_history.to(device).type(th.cuda.FloatTensor)
+        action_probs = maddpg.select_action(obs_history, pose).to(device)
+        action_probs_valid = action_probs.cpu().numpy().copy()
         action = []
+        
         for i,probs in enumerate(action_probs):
             rbt = world.robots[i]
             for j,frt in enumerate(rbt.get_frontiers()):
@@ -154,7 +161,7 @@ for i_episode in range(n_episode):
 
     # if not discard:
     maddpg.episode_done += 1
-    if maddpg.episode_done % 100 == 0:
+    if maddpg.episode_done % 10 == 0:
         print('Save Models......')
         if not os.path.exists(MODEL_DIR):
             os.makedirs(MODEL_DIR)

@@ -30,7 +30,7 @@ class MADDPG:
         self.memory = ReplayMemory(capacity)
         self.batch_size = batch_size
         # self.use_cuda = t.cuda.is_available()
-        self.use_cuda = False
+        self.use_cuda = True
         self.episodes_before_train = episodes_before_train
 
         self.GAMMA = 0.95
@@ -158,7 +158,13 @@ class MADDPG:
         for i in range(self.n_agents):
             sb = state_batch[i, :].detach()
             pose_batch_i = pose_batch[i,...]
-            act = self.actors[i](sb.unsqueeze(0),pose_batch_i.unsqueeze(0)).squeeze()
+            sb = sb.type(FloatTensor)
+            pose_batch_i = pose_batch_i.type(FloatTensor)
+            act = self.actors[i](sb.unsqueeze(0),pose_batch_i.unsqueeze(0)).squeeze().type(FloatTensor)
+            
+            # sb = state_batch[i, :].detach()
+            # pose_batch_i = pose_batch[i,...]
+            # act = self.actors[i](sb.unsqueeze(0),pose_batch_i.unsqueeze(0)).squeeze()
             act = t.clamp(act, 1e-6, 1-1e-6)
             actions[i, :] = act
         self.steps_done += 1

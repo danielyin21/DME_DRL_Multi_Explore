@@ -12,6 +12,8 @@ from sim_utils import onehot_from_action
 import cv2
 import yaml
 
+device = th.device("cuda" if th.cuda.is_available() else "cpu")
+
 n_agents = 2
 n_states = 2
 n_actions = 8
@@ -61,9 +63,15 @@ for times in range(TIMES):
             obs_history = th.from_numpy(obs_history).float()
         length = 0
         for t in range(MAX_STEPS):
-            obs_history = obs_history.type(FloatTensor)
-            action_probs = maddpg.select_action(obs_history, pose).data.cpu()
-            action_probs_valid = np.copy(action_probs)
+            # obs_history = obs_history.type(FloatTensor)
+            # action_probs = maddpg.select_action(obs_history, pose).data.cpu()
+            # action_probs_valid = np.copy(action_probs)
+            # action = []
+            
+            
+            obs_history = obs_history.to(device).type(th.cuda.FloatTensor)
+            action_probs = maddpg.select_action(obs_history, pose).to(device)
+            action_probs_valid = action_probs.cpu().numpy().copy()
             action = []
             for i, probs in enumerate(action_probs):
                 rbt = world.robots[i]
