@@ -3,4 +3,6 @@
 *.txt
 *.png
 *.pyc
-
+*.iml
+*.xml
+*.local
