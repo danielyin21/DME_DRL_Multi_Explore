@@ -85,17 +85,17 @@ def get_white_pixels_surrounded_by_black(image):
 
 
 def draw_map(file_name, save_path):
-    image = np.ones((20, 20, 3), dtype=np.uint8) * 255
+    image = np.ones((30, 30, 3), dtype=np.uint8) * 255
 
     # Generate random black dots
-    num_dots = 20  # Adjust the range as per your preference
+    num_dots = 70  # Adjust the range as per your preference
 
     dot_region_size = 5  # Size of the region to place each dot
 
     for _ in range(num_dots):
         # Randomly select a region to place the dot
-        region_x = random.randint(1, 20 - dot_region_size - 1)
-        region_y = random.randint(1, 20 - dot_region_size - 1)
+        region_x = random.randint(1, 30 - dot_region_size - 1)
+        region_y = random.randint(1, 30 - dot_region_size - 1)
 
         # Randomly choose a position within the selected region
         x = random.randint(region_x, region_x + dot_region_size - 1)
@@ -110,11 +110,11 @@ def draw_map(file_name, save_path):
         # Set the pixel color to black
         image[y, x] = (0, 0, 0)
     white_pixels_surrounded_by_black = get_white_pixels_surrounded_by_black(image)
-    print(white_pixels_surrounded_by_black)
+    # print(white_pixels_surrounded_by_black)
     for y, x in white_pixels_surrounded_by_black:
-        print([y, x])
+        # print([y, x])
         image[y, x] = (0, 0, 0)
-        print(image[y,x])
+        # print(image[y,x])
     if not os.path.exists(save_path):
         os.mkdir(save_path)
     cv2.imwrite(save_path + "/" + file_name + '.png', image)
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     parser.add_argument("--save_map_id_set_file", help="map id set (.txt)",
                         default=r'.\assets\map_id.txt')
     parser.add_argument("--pic_num", help="number of pictures",
-                        default=100)
+                        default=1)
     parser.add_argument("--save_path", type=str, default=r'.\assets\png')
 
 

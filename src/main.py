@@ -3,6 +3,7 @@ import robot_exploration_v1
 from maddpg.MADDPG import MADDPG
 import numpy as np
 import torch as th
+import torch.nn as nn
 from tensorboardX import SummaryWriter
 from copy import copy,deepcopy
 from torch.distributions import categorical
@@ -17,6 +18,8 @@ e_render = True
 time_now = time.strftime("%m%d_%H%M%S")
 writer = SummaryWriter(os.getcwd()+'/../runs/'+time_now)
 
+num_step_file = open(os.getcwd()+'/../runs/'+time_now+'/num_steps.txt', "w")
+num_step_file.close()
 food_reward = 10.
 poison_reward = -1.
 encounter_reward = 0.01
@@ -34,13 +37,13 @@ n_pose = 2
 # capacity = 1000000
 capacity = 5000
 # batch_size = 1000
-batch_size = 100
+batch_size = 25
 
-n_episode = 200000
+n_episode = 1000
 # max_steps = 1000
 max_steps = 50
 # episodes_before_train = 1000
-episodes_before_train = 100
+episodes_before_train = 50
 
 win = None
 param = None
@@ -73,6 +76,7 @@ if load_model:
 
 FloatTensor = th.cuda.FloatTensor if maddpg.use_cuda else th.FloatTensor
 for i_episode in range(n_episode):
+    # print("started 1")
     try:
         obs,pose = world.reset()
         pose = th.tensor(pose)
@@ -96,7 +100,11 @@ for i_episode in range(n_episode):
     total_reward = 0.0
     rr = np.zeros((n_agents,))
     wrong_step = 0
+    # print("started 2")
+    num_steps = 0
     for t in range(max_steps):
+        num_steps = num_steps + 1
+        # print("test")
         # render every 100 episodes to speed up training
         if i_episode % 10 == 0 and e_render:
             world.render()
@@ -147,10 +155,18 @@ for i_episode in range(n_episode):
         maddpg.memory.push(obs_history, action, next_obs_history, reward, pose, next_pose)
         obs_history = next_obs_history
         pose = next_pose
-        if t % 10 == 0:
+        if t % 5 == 0:
+            # print("update policy")
             c_loss, a_loss = maddpg.update_policy()
+            # print("update policy end")
         if done:
             break
+
+    num_step_file = open(os.getcwd() + '/../runs/' + time_now + '/num_steps.txt', "a")
+    num_step_file.write("eps: " + str(i_episode) + " #step: " + str(num_steps) + "\n")
+
+    num_step_file.close()
+
 
     # if not discard:
     maddpg.episode_done += 1
@@ -170,7 +186,10 @@ for i_episode in range(n_episode):
     # visual
     writer.add_scalars('scalar/reward',{'total_rwd':total_reward,'r0_rwd':rr[0],'r1_rwd':rr[1]},i_episode)
     if i_episode > episodes_before_train and i_episode % 10 == 0:
-        writer.add_scalars('scalar/mean_rwd',{'mean_reward':np.mean(reward_record[-100:])}, i_episode)
+        print(reward_record)
+        mean_reward = th.mean(th.stack(reward_record[-100:]).cpu()).item()
+        writer.add_scalars('scalar/mean_rwd', {'mean_reward': mean_reward}, i_episode)
+        # writer.add_scalars('scalar/mean_rwd',{'mean_reward':np.mean(reward_record[-100:])}, i_episode)
     if not c_loss is None:
         writer.add_scalars('loss/c_loss',{'r0':c_loss[0],'r1':c_loss[1]},i_episode)
     if not a_loss is None:

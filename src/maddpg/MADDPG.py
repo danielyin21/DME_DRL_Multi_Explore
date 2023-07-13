@@ -7,6 +7,7 @@ import torch.nn as nn
 
 LOAD_MODEL = False
 
+device = t.device("cuda" if t.cuda.is_available() else "cpu")
 def soft_update(target, source, t):
     for target_param, source_param in zip(target.parameters(),
                                           source.parameters()):
@@ -21,6 +22,8 @@ def hard_update(target, source):
 
 
 class MADDPG:
+    use_cuda: bool
+
     def __init__(self, n_agents, dim_obs, dim_act, dim_pose, batch_size,
                  capacity, episodes_before_train):
 
@@ -30,7 +33,7 @@ class MADDPG:
         self.memory = ReplayMemory(capacity)
         self.batch_size = batch_size
         # self.use_cuda = t.cuda.is_available()
-        self.use_cuda = False
+        self.use_cuda = True
         self.episodes_before_train = episodes_before_train
 
         self.GAMMA = 0.95
@@ -45,7 +48,7 @@ class MADDPG:
         self.critic_optimizer = [Adam(x.parameters(),
                                       lr=0.001) for x in self.critics]
         self.actor_optimizer = [Adam(x.parameters(),
-                                     lr=0.001) for x in self.actors]    # lr = 0.0001
+                                     lr=0.001) for x in self.actors]   # lr = 0.0001
 
         self.actors_target = deepcopy(self.actors)
         self.critics_target = deepcopy(self.critics)
@@ -157,8 +160,8 @@ class MADDPG:
         FloatTensor = t.cuda.FloatTensor if self.use_cuda else t.FloatTensor
         for i in range(self.n_agents):
             sb = state_batch[i, :].detach()
-            pose_batch_i = pose_batch[i,...]
-            act = self.actors[i](sb.unsqueeze(0),pose_batch_i.unsqueeze(0)).squeeze()
+            pose_batch_i = pose_batch[i,...].to("cuda")
+            act = self.actors[i](sb.unsqueeze(0).to("cuda"),pose_batch_i.unsqueeze(0).to("cuda")).squeeze()
             act = t.clamp(act, 1e-6, 1-1e-6)
             actions[i, :] = act
         self.steps_done += 1

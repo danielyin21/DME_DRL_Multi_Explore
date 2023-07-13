@@ -21,8 +21,8 @@ class RobotExplorationT1(gym.Env):
             file_path = os.path.join(os.getcwd() + self.config['png_dir'], filename)
             if os.path.isfile(file_path):
                 os.remove(file_path)
-        draw_maps(self.map_id_set_train,100,os.getcwd()+self.config['png_dir'])
-        draw_maps(self.map_id_set_eval,10, os.getcwd() + self.config['png_dir'])
+        draw_maps(self.map_id_set_train,1,os.getcwd()+self.config['png_dir'])
+        draw_maps(self.map_id_set_eval,1, os.getcwd() + self.config['png_dir'])
         self.map_id_set_train = np.loadtxt(os.getcwd() + self.config['map_id_train_set'], str)
         self.map_id_set_eval = np.loadtxt(os.getcwd() + self.config['map_id_eval_set'], str)
 
@@ -44,6 +44,10 @@ class RobotExplorationT1(gym.Env):
 
     def reset(self,random=True):
         plt.close('all')
+        print(self.map_id_set_train)
+        self.map_id_set_train = self.map_id_set_train.flatten()
+        # self.map_id_set_train = int(self.map_id_set_train)
+        # self.map_id_set_train = self.map_id_set_train.split(',')
         if random:
             self.map_id = np.random.choice(self.map_id_set_train)
         else:
