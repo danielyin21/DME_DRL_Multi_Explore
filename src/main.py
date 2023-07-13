@@ -37,13 +37,13 @@ n_pose = 2
 # capacity = 1000000
 capacity = 5000
 # batch_size = 1000
-batch_size = 25
+batch_size = 100
 
-n_episode = 1000
+n_episode = 1500
 # max_steps = 1000
 max_steps = 50
 # episodes_before_train = 1000
-episodes_before_train = 50
+episodes_before_train = 100
 
 win = None
 param = None
@@ -106,7 +106,7 @@ for i_episode in range(n_episode):
         num_steps = num_steps + 1
         # print("test")
         # render every 100 episodes to speed up training
-        if i_episode % 10 == 0 and e_render:
+        if i_episode % 100 == 0 and e_render:
             world.render()
         obs_history = obs_history.type(FloatTensor)
         action_probs = maddpg.select_action(obs_history, pose).data.cpu()
@@ -155,7 +155,7 @@ for i_episode in range(n_episode):
         maddpg.memory.push(obs_history, action, next_obs_history, reward, pose, next_pose)
         obs_history = next_obs_history
         pose = next_pose
-        if t % 5 == 0:
+        if t % 10 == 0:
             # print("update policy")
             c_loss, a_loss = maddpg.update_policy()
             # print("update policy end")
@@ -166,7 +166,6 @@ for i_episode in range(n_episode):
     num_step_file.write("eps: " + str(i_episode) + " #step: " + str(num_steps) + "\n")
 
     num_step_file.close()
-
 
     # if not discard:
     maddpg.episode_done += 1
