@@ -37,7 +37,9 @@ class MADDPG:
         self.episodes_before_train = episodes_before_train
 
         self.GAMMA = 0.95
-        self.tau = 0.01
+        # self.GAMMA = 0.5
+        #self.tau = 0.01
+        self.tau = 0.5
 
         # self.var = [1.0 for i in range(n_agents)]
         self.var = [0.01 for i in range(n_agents)]

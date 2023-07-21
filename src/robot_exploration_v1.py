@@ -12,17 +12,20 @@ from robot import Robot
 
 class RobotExplorationT1(gym.Env):
     def __init__(self,config_path=os.getcwd()+'/../assets/config.yaml', number=None):
+
+        self.load_map_only = True
+
         np.random.seed(1234)
         with open(config_path) as stream:
             self.config = yaml.load(stream, Loader=yaml.SafeLoader)
         self.map_id_set_train = os.getcwd()+self.config['map_id_train_set']
         self.map_id_set_eval = os.getcwd()+self.config['map_id_eval_set']
-        for filename in os.listdir(os.getcwd() + self.config['png_dir']):
-            file_path = os.path.join(os.getcwd() + self.config['png_dir'], filename)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-        draw_maps(self.map_id_set_train,1,os.getcwd()+self.config['png_dir'])
-        draw_maps(self.map_id_set_eval,1, os.getcwd() + self.config['png_dir'])
+        # for filename in os.listdir(os.getcwd() + self.config['png_dir']):
+        #     file_path = os.path.join(os.getcwd() + self.config['png_dir'], filename)
+        #     if os.path.isfile(file_path):
+        #         os.remove(file_path)
+        # draw_maps(self.map_id_set_train,1,os.getcwd()+self.config['png_dir'],self.load_map_only)
+        # draw_maps(self.map_id_set_eval,1, os.getcwd() + self.config['png_dir'],self.load_map_only)
         self.map_id_set_train = np.loadtxt(os.getcwd() + self.config['map_id_train_set'], str)
         self.map_id_set_eval = np.loadtxt(os.getcwd() + self.config['map_id_eval_set'], str)
 

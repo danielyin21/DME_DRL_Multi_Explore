@@ -34,6 +34,13 @@ class Critic(basic_module.BasicModule):
         obs_2 = obs[:,:, 3 * int(r / 6):4 * int(r / 6)].to(device)
         obs_1 = obs[:,:, 4 * int(r / 6):5 * int(r / 6)].to(device)
         obs_0 = obs[:,:, 5 * int(r / 6):].to(device)
+        # print("obs",obs.size())
+        # print("obs_0",obs_0.size())
+        # print("obs_1", obs_1.size())
+        # print("obs_2", obs_2.size())
+        # print("obs_3", obs_3.size())
+        # print("obs_4", obs_4.size())
+        # print("obs_5", obs_5.size())
 
         hist_0 = F.relu(self.conv2(F.relu(self.conv1(obs_0)))).to(device)
         hist_0 = hist_0.contiguous().view(-1, self.num_flat_features(hist_0)).to(device)

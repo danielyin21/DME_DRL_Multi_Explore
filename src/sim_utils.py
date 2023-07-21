@@ -167,17 +167,30 @@ def gumbel_softmax(logits, temperature=1.0, hard=False):
 
 
 
-def draw_maps(map_id_file_path, pic_num , save_path):
+def draw_maps(map_id_file_path, pic_num , save_path,load_map_only):
 
+    if(not load_map_only):
+        map_id_file = open(map_id_file_path, "w")
 
+        for iteration in range(pic_num):
+            current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
+            map_id_file.write("image" + str(iteration) + "-" + current_time + "\n")
+            draw_map("image" + str(iteration) + "-" + current_time, save_path)
 
+        map_id_file.close()
 
-
-    map_id_file = open(map_id_file_path, "w")
-
-    for iteration in range(pic_num):
-        current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
-        map_id_file.write("image" + str(iteration) + "-" + current_time + "\n")
-        draw_map("image" + str(iteration) + "-" + current_time, save_path)
-
-    map_id_file.close()
+    # if (load_map_only):
+    #     map_id_file = open(map_id_file_path, "w")
+    #
+    #     for filename in os.listdir(directory):
+    #         f = os.path.join(directory, filename)
+    #         # checking if it is a file
+    #         if os.path.isfile(f):
+    #             print(f)
+    #
+    #     for iteration in range(pic_num):
+    #         current_time = datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")
+    #         map_id_file.write("image" + str(iteration) + "-" + current_time + "\n")
+    #         draw_map("image" + str(iteration) + "-" + current_time, save_path)
+    #
+    #     map_id_file.close()

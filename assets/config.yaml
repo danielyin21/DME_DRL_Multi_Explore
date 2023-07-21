@@ -1,8 +1,8 @@
 # world settings
 json_dir: /../assets/json
 png_dir: /../assets/png
-map_id_train_set: /../assets/map_id_100.txt
-map_id_eval_set: /../assets/map_id_10.txt
+map_id_train_set: /../assets/map_id_train.txt
+map_id_eval_set: /../assets/map_id_eval.txt
 
 # [GC,LC,NC]
 comm_mode: NC
