@@ -36,8 +36,10 @@ class MADDPG:
         self.use_cuda = True
         self.episodes_before_train = episodes_before_train
 
-        self.GAMMA = 0.95
-        self.tau = 0.01
+        # self.GAMMA = 0.95
+        self.GAMMA = 0.5
+        # self.tau = 0.01
+        self.tau = 0.25
 
         # self.var = [1.0 for i in range(n_agents)]
         self.var = [0.01 for i in range(n_agents)]
@@ -48,7 +50,7 @@ class MADDPG:
         self.critic_optimizer = [Adam(x.parameters(),
                                       lr=0.001) for x in self.critics]
         self.actor_optimizer = [Adam(x.parameters(),
-                                     lr=0.001) for x in self.actors]   # lr = 0.0001
+                                     lr=0.0001) for x in self.actors]   # lr = 0.0001
 
         self.actors_target = deepcopy(self.actors)
         self.critics_target = deepcopy(self.critics)

@@ -13,7 +13,7 @@ import os
 import yaml
 print(th.cuda.is_available())
 # do not render the scene
-e_render = True
+e_render = False
 # tensorboard writer
 time_now = time.strftime("%m%d_%H%M%S")
 writer = SummaryWriter(os.getcwd()+'/../runs/'+time_now)
